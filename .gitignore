@@ -1,0 +1,15 @@
+# build output
+build/
+a.out
+*.o
+*.ko
+
+# compiled binaries left next to sources
+scheduling/rr-vs-fifo/program_a
+scheduling/rr-vs-fifo/program_b
+
+# editor / OS junk
+.vscode/
+.idea/
+.DS_Store
+*.swp

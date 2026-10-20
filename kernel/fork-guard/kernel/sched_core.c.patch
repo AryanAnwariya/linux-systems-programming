@@ -1,0 +1,24 @@
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -19,6 +19,7 @@
+  #include <linux/cpuset.h>
+  #include <linux/delayacct.h>
+  #include <linux/init_task.h>
++#include <linux/fork_guard.h>
+
+ /*
+  * Convert user-nice values [-20 … 19] to static priority [100 … 139],
+@@ -4470,6 +4471,8 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
+ {
+ 	__sched_fork(clone_flags, p);
+
++	if (p->policy == SCHED_NORMAL || p->policy == SCHED_BATCH) {
++		uid_t uid = from_kuid(&init_user_ns, task_uid(p));
++		int nice = fg_get_nice(uid);
++		p->static_prio = NICE_TO_PRIO(nice);
++		set_load_weight(p, false);
++	}
++
+ 	/*
+ 	 * We mark the process as NEW here. This guarantees that
+ 	 * nobody will actually run it, and a signal or other external
